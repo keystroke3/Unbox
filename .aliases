@@ -1,0 +1,174 @@
+#!/bin/sh
+
+#functions
+rr(){
+    cd && cd react/client
+    git pull
+    diff -q .last_pkglist.json package.json ||
+    (npm install && cp -f package.json .last_pkglist.json)
+}
+
+fakerr(){
+    diff -q .last_pkglist.json pk.json ||
+    (echo 'updating npm packages' && echo 'saving current package list')
+}
+    
+swap(){
+    mv "$1" "/tmp/$1"
+    mv "$2" "$1"
+    mv "/tmp/$1" "$2"
+}
+
+pr(){
+    cd ~/refactor/Foto_Dino/
+    git pull
+    cd -
+}
+
+function cd {
+    builtin cd "$@"
+    pwd > ~/.zsh/lastdir
+}
+
+if [ -f ~/.zsh/lastdir ]
+    then cd "$(cat ~/.zsh/lastdir)"
+fi
+
+e(){
+    fuzz=$(sudo rg --files /etc/ /var/log/ /opt/ | fzf --reverse --height 40)
+    if [ -z $fuzz ]
+    then 
+        return 0
+    elif [ -d $fuzz ]
+    then
+        echo "$fuzz" | xargs -o vim && echo "done"
+    fi
+}
+
+l(){
+    fuzz=$(sudo rg --files /etc/ /var/log/ /opt/ | fzf --reverse --height 20)
+    if [ -z $fuzz ]
+    then 
+        return 0
+    elif [ -d $fuzz ]
+    then
+        less $fuzz
+    fi
+}
+
+j(){
+    fuzz=$(fdfind -t d . $HOME /etc/ /var/log/ /var/www/ /opt/ | fzf --reverse --height 20)
+    if [ -z $fuzz ]
+    then 
+        return 0
+    elif [ -d $fuzz ]
+    then
+        cd "$fuzz" && reset 
+    fi
+}
+
+o(){
+    fuzz=$(rg --files ~/ | fzf --reverse --height 20%)
+    if [ -z $fuzz ]
+    then 
+        return 0
+    elif [ -f $fuzz ]
+    then
+        echo "$fuzz" | xargs -o vim && echo "done"
+    fi
+}
+
+ngenable(){
+    sudo ln -s /etc/nginx/sites-available/"$1" /etc/nginx/sites-enabled/"$1"
+}
+
+ngdisable(){
+    sudo rm /etc/nginx/sites-enabled/"$1"
+}
+
+olog(){
+    sudo less $(rg --files --no-messages /var/log/ | grep -vE ".gz|journal|.1" | fzf )
+}
+
+py(){
+    $VIRTUAL_ENV/bin/python "$@"
+}
+
+
+# aliases
+
+alias fzf="fzf --layout=reverse --height=20%"
+alias zz="vim ~/.zprofile"
+alias cp="cp -i"                          # confirm before overwriting something
+alias vi="vim"
+alias df='df -h'                          # human-readable sizes
+alias update="sudo apt update && sudo apt upgrade"
+alias get="sudo apt install"
+alias search="sudo apt serach"
+alias kick="sudo apt remove && sudo apt autoremove"
+alias mv="mv -v"
+alias c="clear"
+alias wget="wget -U Mozilla/5.0 -c"
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias ~="cd ~" # `cd` is probably faster to type though
+alias -- -="cd -"
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+alias sudo='sudo '
+alias restart="sudo systemctl restart"
+alias status="sudo systemctl status"
+alias al="vim ~/.aliases && clear && source ~/.zshrc"
+alias dd='dd status=progress'
+alias python="python3"
+alias copy="xclip -sel c < $1"
+alias v="vim ~/.vim/vimrc"
+alias z="vim ~/.zshrc && exec ${SHELL} && clear"
+alias aports="sudo vim /etc/apache2/ports.conf"
+alias ng="sudo vim /etc/nginx/sites-available/"
+alias ap="sudo vim /etc/apache2/sites-available"
+alias ls="exa"
+alias la="exa -a"
+alias ll="exa -lga"
+alias stop="sudo systemctl stop"
+alias start="sudo systemctl start"
+alias ngt="sudo nginx -t"
+alias ngr="sudo systemctl restart nginx"
+alias nga="sudo less /var/log/nginx/access.log"
+alias nge="sudo less /var/log/nginx/error.log"
+alias rna="sudo systemctl restart nginx apache2"
+alias apc="apachectl configtest";
+alias dcd="docker-compose down"
+alias dcu="docker-compose up -d"
+alias reload="exec ${SHELL} && clear"
+alias ls2p="sudo ls /var/log/apache2/"
+alias a2less='sudo less /var/log/apache2/"$@"'
+alias tibaup='sudo systemctl start emperor-uwsgi'
+alias tibadown='sudo systemctl stop emperor-uwsgi'
+alias gst='git status'
+alias mkmigrate="python manage.py makemigrations  && python manage.py migrate"
+alias jnl="sudo journalctl"
+alias exal="ls"
+alias sup="python manage.py createsuperuser"
+alias cpass="python manage.py changepassword"
+alias runserver="python manage.py runserver 0.0.0.0:8000"
+alias dup="sudo docker-compose up"
+alias ddown="sudo docker-compose down"
+alias searx="sudo -H -u searx -i"
+alias pc="sudo netstat -tulnp | grep $1"
+alias crontab="export EDITOR=vim;crontab"
+alias mail='neomutt'
+alias ga="git add -u"
+alias ufws="sudo ufw status numbered | grep 'DENY'"
+alias rewire="sudo docker-compose down && sudo docker-compose up -d"
+alias venv="source $VIRTUAL_ENV/bin/activate"
+alias dshell="py manage.py shell"
+alias cdr="cd /home/ubuntu/refactor/Foto_Dino/"
+alias mm="python manage.py makemigrations"
+alias migrate="python manage.py migrate"
+alias dr="sudo systemctl daemon-reload"
+alias pc="sudo netstat -tulnp | grep "$1""
+
