@@ -1,11 +1,6 @@
 #!/bin/sh
 
-#functions
-swap(){
-    mv "$1" "/tmp/$1"
-    mv "$2" "$1"
-    mv "/tmp/$1" "$2"
-}
+#functiosn
 function cd {
     builtin cd "$@"
     pwd > ~/.zsh/lastdir
@@ -14,6 +9,10 @@ function cd {
 if [ -f ~/.zsh/lastdir ]
     then cd "$(cat ~/.zsh/lastdir)"
 fi
+
+swap(){
+    mv "$1" "$1.swp"; mv "$2" "$1"; mv "$1.swp" "$2"
+}
 
 e(){
     fuzz=$(sudo rg --files /etc/ /var/log/ /opt/ | fzf --reverse --height 40)
@@ -58,6 +57,27 @@ o(){
         echo "$fuzz" | xargs -o vim && echo "done"
     fi
 }
+ol(){
+    fuzz=`rg --files | fzf --reverse --height 40%`
+    if [ -z $fuzz ]
+    then 
+        return 0
+    elif [ -f $fuzz ]
+    then
+        filetype=`xdg-mime query filetype $fuzz | awk -F/ '{print $1}'`
+        case $filetype in
+            text )
+                echo "$fuzz" | xargs -o vim ;;
+            audio )
+                mpv $fuzz & disown ;;
+            application )
+                echo "$fuzz" | xargs -o vim ;;
+            * )
+                xdg-open $fuzz & disown 
+        esac
+    fi
+}
+
 
 ngenable(){
     sudo ln -s /etc/nginx/sites-available/"$1" /etc/nginx/sites-enabled/"$1"
@@ -104,6 +124,7 @@ alias restart="sudo systemctl restart"
 alias status="sudo systemctl status"
 alias al="vim ~/.aliases && clear && source ~/.zshrc"
 alias dd='dd status=progress'
+alias python="python3"
 alias copy="xclip -sel c < $1"
 alias v="vim ~/.vim/vimrc"
 alias z="vim ~/.zshrc && exec ${SHELL} && clear"
@@ -120,7 +141,7 @@ alias ngr="sudo systemctl restart nginx"
 alias nga="sudo less /var/log/nginx/access.log"
 alias nge="sudo less /var/log/nginx/error.log"
 alias rna="sudo systemctl restart nginx apache2"
-alias apc="apachectl configtest";
+alias apc="sudo apachectl configtest";
 alias dcd="docker-compose down"
 alias dcu="docker-compose up -d"
 alias reload="exec ${SHELL} && clear"
@@ -129,19 +150,26 @@ alias a2less='sudo less /var/log/apache2/"$@"'
 alias tibaup='sudo systemctl start emperor-uwsgi'
 alias tibadown='sudo systemctl stop emperor-uwsgi'
 alias gst='git status'
+alias mkmigrate="python manage.py makemigrations  && python manage.py migrate"
 alias jnl="sudo journalctl"
-alias rs="/usr/bin/env python manage.py runserver 0.0.0.0:8000"
-alias mm="/usr/bin/env python manage.py makemigrations"
-alias migrate="/usr/bin/env python manage.py migrate"
+alias exal="ls"
+alias sup="python manage.py createsuperuser"
+alias cpass="python manage.py changepassword"
+alias runserver="python manage.py runserver 0.0.0.0:8000"
 alias dup="sudo docker-compose up"
 alias ddown="sudo docker-compose down"
+alias searx="sudo -H -u searx -i"
 alias pc="sudo netstat -tulnp | grep $1"
 alias crontab="export EDITOR=vim;crontab"
 alias mail='neomutt'
 alias ga="git add -u"
-alias redock="sudo docker-compose down && sudo docker-compose up -d"
+alias qh="awk '/$(date '+%d\/%b')/ && /headless/' access.log| wc -l"
+alias qa="grep -i $(date '+%d/%b') 'access.log' | wc -l"
+alias qs="awk '/$(date '+%d\/%b')/ && /search/' access.log| wc -l"
+alias qd="cat $1 | wc -l"
+alias ufws="sudo ufw status numbered | grep 'DENY'"
+alias rewire="sudo docker-compose down && sudo docker-compose up -d"
 alias venv="source $VIRTUAL_ENV/bin/activate"
-alias dshell="py manage.py shell"
-alias dr="sudo systemctl daemon-reload"
-alias pc="sudo netstat -tulnp | grep "$1""
-
+alias hits="grep -E -v 'headless|403|499|404|styles|images|scripts|bot|504' ~/linkastream/access.log | grep '/$1'| awk '{print $1}' | wc -l"
+alias td="transmission-daemon"
+alias tr="transmission-remote"
