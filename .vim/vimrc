@@ -23,3 +23,4 @@ if &term =~ "xterm\\|rxvt"
   " use \003]12;gray\007 for gnome-terminal
 endif
 map ; :
+nnoremap <silent> <F2> :set relativenumber! <bar> set nu!<CR>
