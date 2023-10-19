@@ -3,15 +3,21 @@
 ---
 
 This is a simple set up script used to quickly set up a new ubuntu server with my configs. It automatically installs my most used software and services,
-nice to haves and renames the server to something more meaningful. It currently only supports Ubuntu 20.04 and higher.
+nice to haves and renames the server to something more meaningful. I have only tested it on Ubuntu 20.04 LTS and higher, but it should work with any other distro that uses the apt package manager.
 
-### Running the script
-You first need to establish a connection with the server and make sure `git` is installed. You also need a non-root user with sudo privileges. The script
-does not work with root user.
-
-Once the repo is on the server, and a non root user has been created, the script can be run.  Do so by running  
+### Usage
+The script requires a user with sudo priviledges and the `wget` utility, so make sure those are setup first.
+To execute the file, simply run the following:
 
 ```bash
+sudo bash -c $(curl -fsSL https://raw.githubusercontent.com/keystroke3/Unbox/main/setup.sh)
+```
+You can also download the zip file, unzip it and manually run `./setup.sh`:
+
+```bash
+wget https://github.com/keystroke3/unbox/archive/refs/heads/main.zip -O /tmp/unbox.zip 
+unzip /tmp/unbox.zip
+cd Unbox-main
 sudo ./setup.sh
 ```
 
@@ -20,4 +26,5 @@ If that results in an error then run
 ```bash
 sudo bash setup.sh
 ```
+If you find this script useful, then star it! If you find a bug, you can create an issue and if you want fix or address a bug, you can do so by making a pull request.
 
