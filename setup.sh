@@ -9,7 +9,10 @@ touch '/tmp/unbox.lock' wget https://github.com/keystroke3/unbox/archive/refs/he
 unzip /tmp/unbox.zip &&
 cd Unbox-main)
 sudo apt update && sudo apt upgrade
+
+# Add or remove packages from this list
 packages=("zsh" "nginx" "certbot" "python3-certbot-nginx" "exa" "postgresql" "ripgrep" "fd-find" "fzf" "python3-virtualenv" "sqlite3" "webp" "redis" "net-tools" "python3-pip" "libpangocairo-1.0-0" "htop" "man" "neovim")
+
 dots=(".aliases" ".vim" ".zshrc")
 user_home=$(getent passwd $SUDO_USER | cut -d: -f6)
 echo '***** Setting up ZSH ****'
