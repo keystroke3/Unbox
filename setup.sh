@@ -2,19 +2,20 @@
 # Assuming running on Ubuntu/Debian
 # This script should be run with sudo
 
-sudo DEBIAN_FRONTEND=noninteractive apt update && sudo DEBIAN_FRONTEND=noninteractive apt upgrade
+export DEBIAN_FRONTEND=noninteractive
+sudo apt update && sudo apt upgrade
 packages=("zsh" "nginx" "certbot" "python3-certbot-nginx" "exa" "postgresql" "ripgrep" "fd-find" "fzf" "python3-virtualenv" "sqlite3" "webp" "redis" "unzip" "net-tools" "python3-pip" "libpangocairo-1.0-0")
 dots=(".aliases" ".vim" ".zshrc")
 user_home=$(getent passwd $SUDO_USER | cut -d: -f6)
 echo '***** Setting up ZSH ****'
 for dot in ${dots[@]}
 do
-	ln -s "$(pwd)/$dot" "$user_home/$dot"
+	cp -rs "$(pwd)/$dot" "$user_home/$dot"
     sudo chown $SUDO_USER:$SUDO_USER $dot
 done
 for pkg in ${packages[@]}
 do
-	sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $pkg
+	sudo apt-get install -y $pkg
 done
 echo '***** Setting up ZSH ****'
 zdir="$user_home/.zsh"
@@ -28,7 +29,7 @@ sudo chown $SUDO_USER:$SUDO_USER $user_home/.zsh -R
 sudo sh -c "$(curl -fsSL https://starship.rs/install.sh)"
 sudo usermod -s /bin/zsh $SUDO_USER
 sudo chown -R $SUDO_USER:$SUDO_USER $user_home
-echo "Enter new hostname or leave blank to keep $HOST"
+echo "Enter new hostname or leave blank to keep $HOST: "
 read newhost
 if [ ! -z $newhost ]
 then
