@@ -2,13 +2,21 @@
 # Assuming running on Ubuntu/Debian
 # This script should be run with sudo
 
+
+# Add or remove packages from this list
+packages=("zsh" "nginx" "certbot" "python3-certbot-nginx" "exa" "postgresql" "ripgrep" "fd-find" "fzf" "python3-virtualenv" "sqlite3" "webp" "eza" "redis" "net-tools" "python3-pip" "libpangocairo-1.0-0" "htop" "man" "neovim")
+
+# do not modify the code below this point unless you know what you are doing
+
 export DEBIAN_FRONTEND=noninteractive
 type unzip > /dev/null || sudo apt install unzip
+
 pwd | grep 'Unbox-main' > /dev/null || (
 touch '/tmp/unbox.lock' wget https://github.com/keystroke3/unbox/archive/refs/heads/main.zip -O /tmp/unbox.zip &&
 unzip /tmp/unbox.zip &&
 cd Unbox-main)
 
+## Install Eza 
 sudo mkdir -p /etc/apt/keyrings
 wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
 echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
@@ -16,8 +24,6 @@ sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.lis
 
 sudo apt update && sudo apt upgrade
 
-# Add or remove packages from this list
-packages=("zsh" "nginx" "certbot" "python3-certbot-nginx" "exa" "postgresql" "ripgrep" "fd-find" "fzf" "python3-virtualenv" "sqlite3" "webp" "eza" "redis" "net-tools" "python3-pip" "libpangocairo-1.0-0" "htop" "man" "neovim")
 
 dots=(".aliases" ".vim" ".zshrc")
 user_home=$(getent passwd $SUDO_USER | cut -d: -f6)

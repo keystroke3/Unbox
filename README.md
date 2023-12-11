@@ -33,7 +33,6 @@ The script will:
     - man
     - neovim  
 
-You can add or remove the packages by modifying the `packages` array in `setup.sh` before running it.
 
 ## Usage
 
@@ -46,7 +45,8 @@ sudo bash -c $(curl -fsSL https://raw.githubusercontent.com/keystroke3/Unbox/mai
 ```
 
 ### With modified packages
-If you wish to modify the script before running it, for example to change the default packages installed, run:
+You can add or remove the packages by modifying the `packages` array in `setup.sh` before running it.  
+To do so, download the script like so:
 ```bash
 curl -fsSL https://raw.githubusercontent.com/keystroke3/Unbox/main/setup.sh > setup.sh
 ```
