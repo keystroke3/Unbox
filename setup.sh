@@ -4,25 +4,29 @@
 
 
 # Add or remove packages from this list
-packages=("zsh" "nginx" "certbot" "python3-certbot-nginx" "exa" "postgresql" "ripgrep" "fd-find" "fzf" "python3-virtualenv" "sqlite3" "webp" "eza" "redis" "net-tools" "python3-pip" "libpangocairo-1.0-0" "htop" "man" "neovim")
+packages=("zsh" "ripgrep" "fd-find" "fzf" "exa" "nginx" "certbot" "python3-certbot-nginx"  "postgresql" "python3-virtualenv" "sqlite3" "webp" "eza" "redis" "net-tools" "python3-pip" "libpangocairo-1.0-0" "htop" "man" "neovim")
 
 # do not modify the code below this point unless you know what you are doing
 
 export DEBIAN_FRONTEND=noninteractive
 type unzip > /dev/null || sudo apt install unzip
 
+mkdir -p /tmp/Unbox
+cd /tmp/Unbox
 pwd | grep 'Unbox-main' > /dev/null || (
-touch '/tmp/unbox.lock' wget https://github.com/keystroke3/unbox/archive/refs/heads/main.zip -O /tmp/unbox.zip &&
-unzip /tmp/unbox.zip &&
-cd Unbox-main)
+touch '/tmp/unbox.lock' && wget https://github.com/keystroke3/unbox/archive/refs/heads/main.zip -O /tmp/unbox.zip && unzip /tmp/unbox.zip && cd Unbox-main)
 
 ## Install Eza 
+
 sudo mkdir -p /etc/apt/keyrings
+
+if [ ! -f /etc/apt/keyrings/gierens.gpg]; then
 wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
 echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
 sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
 
 sudo apt update && sudo apt upgrade
+fi
 
 
 dots=(".aliases" ".vim" ".zshrc")
@@ -37,7 +41,6 @@ for pkg in ${packages[@]}
 do
 	sudo apt-get install -y $pkg
 done
-echo '***** Setting up ZSH ****'
 zdir="$user_home/.zsh"
 [ -d $zdir ] && rm $zdir
 mkdir $zdir
@@ -62,7 +65,7 @@ sudo chown $SUDO_USER:$SUDO_USER $user_home/.zsh -R
 sudo sh -c "$(curl -fsSL https://starship.rs/install.sh)"
 sudo usermod -s /bin/zsh $SUDO_USER
 sudo chown -R $SUDO_USER:$SUDO_USER $user_home
-echo "Enter new hostname or leave blank to keep $HOST: "
+echo "Enter new hostname or leave blank to keep $(cat /etc/hostname): "
 read newhost
 if [ ! -z $newhost ]
 then

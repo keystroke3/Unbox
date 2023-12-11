@@ -53,7 +53,7 @@ curl -fsSL https://raw.githubusercontent.com/keystroke3/Unbox/main/setup.sh > se
 Make modifications that you want but make sure you keep the packages marked with 'required' as listed above. if you don't want to keep these packages, then you should delete the `.aliases` file.
 
 ```bash
-sudo sh setup.sh
+sudo bash setup.sh
 ```
 If you find this script useful, then star it! If you find a bug, you can create an issue and if you want fix or address a bug, you can do so by making a pull request.
 
