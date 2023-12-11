@@ -8,7 +8,6 @@ nice to haves and renames the server to something more meaningful. I have only t
 ## What does it do?
 The script will:
  - Install and setup zsh
- - Install neovim
  - Add my custom zshrc, aliases and minimal nvim configs
  - Add [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting/) and [zsh-autosuggestions](https://github.com/zsh-users/zsh-syntax-highlighting/archive/refs/heads/master.zip)
  - Install [eza](https://eza.rocks) (an 'ls' replacement)
@@ -32,8 +31,9 @@ The script will:
     - libpangocairo-1.0-0
     - htop
     - man
-    - neovim
-   You can add or remove the packages by modifying the `packages` array in `setup.sh` before running it.
+    - neovim  
+
+You can add or remove the packages by modifying the `packages` array in `setup.sh` before running it.
 
 ## Usage
 
