@@ -1,10 +1,10 @@
 #!/bin/bash
 # Assuming running on Ubuntu/Debian
-# This script should be run with sudo
+# This script should be run with sudo by a non-root user
 
 
 # Add or remove packages from this list
-packages=("zsh" "ripgrep" "fd-find" "fzf" "nginx" "certbot" "python3-certbot-nginx"  "postgresql" "python3-virtualenv"  "eza" "redis" "net-tools" "python3-pip" "libpangocairo-1.0-0" "htop" "man" "neovim")
+packages=("zsh" "ripgrep" "fd-find" "fzf" "nginx" "python3-virtualenv"  "eza" "net-tools" "python3-pip" "libpangocairo-1.0-0" "htop" "man")
 
 # do not modify the code below this point unless you know what you are doing
 

@@ -19,19 +19,11 @@ The script will:
     - eza (required)
     - zsh
     - nginx
-    - certbot
-    - python3-certbot-nginx
-    - postgresql
-    - python3-virtualenv
-    - sqlite3
-    - webp
-    - redis
     - net-tools
     - python3-pip
     - libpangocairo-1.0-0
     - htop
     - man
-    - neovim  
 
 
 ## Usage
