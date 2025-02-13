@@ -39,7 +39,9 @@ o(){
 
 
 ngenable(){
-    sudo ln -s /etc/nginx/sites-available/"$1" /etc/nginx/sites-enabled/"$1"
+        fuzz=$(rg '.' /etc/nginx/sites-available/ -l | fzf --reverse --height 40%)
+        [ -f $fuzz ] || return 0
+        sudo ln -s "fuzz" /etc/nginx/sites-enabled/
 }
 
 ngdisable(){
@@ -47,7 +49,7 @@ ngdisable(){
 }
 
 ngedit(){
-        fuzz=$(surf -p /etc/nginx/ | fzf --reverse --height 40%)
+        fuzz=$(rg '.' /etc/nginx/sites-available/ -l | fzf --reverse --height 40%)
         [ -f $fuzz ] || return 0
         sudo vim "$fuzz"
 }
