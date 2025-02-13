@@ -14,27 +14,6 @@ swap(){
     mv "$1" "$1.swp"; mv "$2" "$1"; mv "$1.swp" "$2"
 }
 
-e(){
-    fuzz=$(sudo rg --files /etc/ /var/log/ /opt/ | fzf --reverse --height 40)
-    if [ -z $fuzz ]
-    then 
-        return 0
-    elif [ -d $fuzz ]
-    then
-        echo "$fuzz" | xargs -o vim && echo "done"
-    fi
-}
-
-l(){
-    fuzz=$(sudo rg --files /etc/ /var/log/ /opt/ | fzf --reverse --height 20)
-    if [ -z $fuzz ]
-    then 
-        return 0
-    elif [ -d $fuzz ]
-    then
-        less $fuzz
-    fi
-}
 
 j(){
     fuzz=$(fdfind -t d . $HOME /etc/ /var/log/ /var/www/ /opt/ | fzf --reverse --height 20)
@@ -57,26 +36,6 @@ o(){
         echo "$fuzz" | xargs -o vim && echo "done"
     fi
 }
-ol(){
-    fuzz=`rg --files | fzf --reverse --height 40%`
-    if [ -z $fuzz ]
-    then 
-        return 0
-    elif [ -f $fuzz ]
-    then
-        filetype=`xdg-mime query filetype $fuzz | awk -F/ '{print $1}'`
-        case $filetype in
-            text )
-                echo "$fuzz" | xargs -o vim ;;
-            audio )
-                mpv $fuzz & disown ;;
-            application )
-                echo "$fuzz" | xargs -o vim ;;
-            * )
-                xdg-open $fuzz & disown 
-        esac
-    fi
-}
 
 
 ngenable(){
@@ -87,19 +46,15 @@ ngdisable(){
     sudo rm /etc/nginx/sites-enabled/"$1"
 }
 
-olog(){
-    sudo less $(rg --files --no-messages /var/log/ | grep -vE ".gz|journal|.1" | fzf )
+ngedit(){
+        fuzz=$(surf -p /etc/nginx/ | fzf --reverse --height 40%)
+        [ -f $fuzz ] || return 0
+        sudo vim "$fuzz"
 }
-
-py(){
-    $VIRTUAL_ENV/bin/python "$@"
-}
-
 
 # aliases
 
 alias fzf="fzf --layout=reverse --height=20%"
-alias zz="vim ~/.zprofile"
 alias cp="cp -i"                          # confirm before overwriting something
 alias vi="vim"
 alias df='df -h'                          # human-readable sizes
@@ -108,7 +63,6 @@ alias get="sudo apt install"
 alias search="sudo apt serach"
 alias kick="sudo apt remove && sudo apt autoremove"
 alias mv="mv -v"
-alias c="clear"
 alias wget="wget -U Mozilla/5.0 -c"
 alias ..="cd .."
 alias ...="cd ../.."
@@ -136,40 +90,19 @@ alias la="eza -a"
 alias ll="eza -lga"
 alias stop="sudo systemctl stop"
 alias start="sudo systemctl start"
+alias restart="sudo systemctl restart"
 alias ngt="sudo nginx -t"
 alias ngr="sudo systemctl restart nginx"
-alias nga="sudo less /var/log/nginx/access.log"
-alias nge="sudo less /var/log/nginx/error.log"
-alias rna="sudo systemctl restart nginx apache2"
 alias apc="sudo apachectl configtest";
 alias dcd="docker-compose down"
 alias dcu="docker-compose up -d"
 alias reload="exec ${SHELL} && clear"
-alias ls2p="sudo ls /var/log/apache2/"
-alias a2less='sudo less /var/log/apache2/"$@"'
-alias tibaup='sudo systemctl start emperor-uwsgi'
-alias tibadown='sudo systemctl stop emperor-uwsgi'
 alias gst='git status'
-alias mkmigrate="python manage.py makemigrations  && python manage.py migrate"
-alias jnl="sudo journalctl"
 alias eza="ls"
-alias sup="python manage.py createsuperuser"
-alias cpass="python manage.py changepassword"
-alias runserver="python manage.py runserver 0.0.0.0:8000"
-alias dup="sudo docker-compose up"
-alias ddown="sudo docker-compose down"
-alias searx="sudo -H -u searx -i"
+alias dcu="docker-compose up -d"
+alias dcd="docker-compose down"
+alias dcr="docker-compose restart"
 alias pc="sudo netstat -tulnp | grep $1"
 alias crontab="export EDITOR=vim;crontab"
-alias mail='neomutt'
 alias ga="git add -u"
-alias qh="awk '/$(date '+%d\/%b')/ && /headless/' access.log| wc -l"
-alias qa="grep -i $(date '+%d/%b') 'access.log' | wc -l"
-alias qs="awk '/$(date '+%d\/%b')/ && /search/' access.log| wc -l"
-alias qd="cat $1 | wc -l"
-alias ufws="sudo ufw status numbered | grep 'DENY'"
-alias rewire="sudo docker-compose down && sudo docker-compose up -d"
 alias venv="source $VIRTUAL_ENV/bin/activate"
-alias hits="grep -E -v 'headless|403|499|404|styles|images|scripts|bot|504' ~/linkastream/access.log | grep '/$1'| awk '{print $1}' | wc -l"
-alias td="transmission-daemon"
-alias tr="transmission-remote"
