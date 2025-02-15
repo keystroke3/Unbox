@@ -62,7 +62,7 @@ precmd() {
 }
 
 git_info() {
-    local branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    local branch=$(git branch --show-current 2>/dev/null)
     if [[ -n "$branch" ]]; then
         local dirty=""
         [[ -n "$(git status --porcelain 2>/dev/null)" ]] && dirty="*"
