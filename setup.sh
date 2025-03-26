@@ -15,6 +15,7 @@ error_msg=
 key_string=
 install_docker=
 hostname=
+create_user=
 
 no_hostname=
 no_key=
@@ -23,28 +24,29 @@ no_shell=
 export DEBIAN_FRONTEND=noninteractive
 
 setup_user(){
-    if [ -z $1 ]; then
+    [ ! -z $create_user ] && $username=$create_user 
+    if [ -z $username]; then
 	read -p "Account username to use: " -r _user
 	if [ -z $_user ];then
-	echo "username is required"
-	exit 1
+	    echo "username is required"
+	    exit 1
 	fi
 	username=$_user
-    else
-	username=$1
     fi
     user_home=$(getent passwd $username | cut -d: -f6)
     [ ! -z $user_home ];return 0
+    if [ -z $create_user ]; then
 	printf "User $username does not exist or is not a normal user. Create a new user? (y/N) " 
 	read create_user
 	if [ ! "$(echo $create_user | tr '[:upper:]' '[:lower:]')" == 'y' ]; then
 	    exit 1
 	fi
-	echo "creating new user"
-	sudo useradd -s /usr/bin/zsh -m -G sudo
-	sudo passwd $username
-	mkdir -p $user_home/.ssh/
-	set_public_key
+    fi
+    echo "creating new user"
+    sudo useradd -s /usr/bin/zsh -m -G sudo
+    sudo passwd $username
+    mkdir -p $user_home/.ssh/
+    set_public_key
 }
 
 set_public_key(){
@@ -72,7 +74,7 @@ shell_stup(){
     dots=(".aliases" ".vim" ".zshrc", ".tmux.conf")
     for dot in ${dots[@]}
     do
-	cp -rs "/tmp/Unbox-main/$dot" "$user_home/$dot"
+	cp -r "/tmp/Unbox-main/$dot" "$user_home/$dot"
     done
     zdir="$user_home/.zsh"
     [ -d $zdir ] && rm $zdir
@@ -98,21 +100,26 @@ shell_stup(){
 
 
 install_packages(){
-    sudo apt update && sudo apt upgrade
+    sudo apt update && sudo apt upgrade -y
     sudo apt install -y ${packages[@]}
 }
 
 docker_install(){
-    sudo apt-get install ca-certificates curl
-    sudo install -m 0755 -d /etc/apt/keyrings
-    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-    sudo chmod a+r /etc/apt/keyrings/docker.asc
-    echo \
-	"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-	$(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
-	sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-	sudo apt-get update
-    sudo usermod $username -aG docker
+
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update
+
 }
 
 
@@ -144,35 +151,38 @@ print_help(){
 
 start(){
     while [[ $# -gt 0 ]]; do
-        case "$1" in
-            -u|--username)
-                username="$2"
-                shift 2;;
-            -k|--key)
-                key_string="$2"
-                shift 2;;
-            --no-key)
-                no_key="Y"
-                shift 1;;
-            -d|--install-docker)
-                install_docker="Y"
-                shift 1;;
-            -H|--hostname)
-                hostname="$2"
-                shift 2;;
-            --no-hostname)
-                no_hostname="Y"
-                shift 1;;
-            --no-shell)
-                no_shell="Y"
-                shift 1;;
-            -h|--help)
-                print_help
-                return 0;;
-            *)
-                echo "Invalid argument: $1"
-                exit 1;;
-        esac
+	case "$1" in
+	    -u|--username)
+		username="$2"
+		shift 2;;
+	    -U|--create-user)
+		create_user="$2"
+		shift 2;;
+	    -k|--key)
+		key_string="$2"
+		shift 2;;
+	    --no-key)
+		no_key="Y"
+		shift 1;;
+	    -d|--install-docker)
+		install_docker="Y"
+		shift 1;;
+	    -H|--hostname)
+		hostname="$2"
+		shift 2;;
+	    --no-hostname)
+		no_hostname="Y"
+		shift 1;;
+	    --no-shell)
+		no_shell="Y"
+		shift 1;;
+	    -h|--help)
+		print_help
+		return 0;;
+	    *)
+		echo "Invalid argument: $1"
+		exit 1;;
+	esac
     done
 
     echo 
