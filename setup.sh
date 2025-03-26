@@ -4,43 +4,25 @@
 
 
 # Add or remove packages from this list
-packages=("zsh" "ripgrep" "fd-find" "fzf" "nginx" "python3-virtualenv"  "eza" "net-tools" "python3-pip" "libpangocairo-1.0-0" "htop" "man")
+packages=("zsh" "ripgrep" "fd-find" "fzf" "nginx" "python3-virtualenv"  "eza" "net-tools" "python3-pip" "libpangocairo-1.0-0" "htop" "man", "git", "tmux")
 
 # do not modify the code below this point unless you know what you are doing
 
 export DEBIAN_FRONTEND=noninteractive
 type unzip > /dev/null || sudo apt install unzip
 
-mkdir -p /tmp/Unbox
-cd /tmp/Unbox
 pwd | grep 'Unbox-main' > /dev/null || (
-touch '/tmp/unbox.lock' && wget https://github.com/keystroke3/unbox/archive/refs/heads/main.zip -O /tmp/unbox.zip && unzip /tmp/unbox.zip && cd /tmp/Unbox/Unbox-main)
-
-## Install Eza 
-
-sudo mkdir -p /etc/apt/keyrings
-
-if [ ! -f /etc/apt/keyrings/gierens.gpg]; then
-wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
-echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
-sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
-
-sudo apt update && sudo apt upgrade
-fi
-
+touch '/tmp/unbox.lock' && wget https://github.com/keystroke3/unbox/archive/refs/heads/main.zip -O /tmp/unbox.zip && unzip /tmp/unbox.zip -d /tmp/ && cd /tmp/Unbox-main)
 
 dots=(".aliases" ".vim" ".zshrc")
 user_home=$(getent passwd $SUDO_USER | cut -d: -f6)
 echo '***** Setting up ZSH ****'
 for dot in ${dots[@]}
 do
-	cp -rs "$(pwd)/$dot" "$user_home/$dot"
+    cp -rs "/tmp/Unbox-main/$dot" "$user_home/$dot"
     sudo chown $SUDO_USER:$SUDO_USER $dot
 done
-for pkg in ${packages[@]}
-do
-	sudo apt install -y $pkg
-done
+sudo apt install -y ${packages[@]}
 zdir="$user_home/.zsh"
 [ -d $zdir ] && rm $zdir
 mkdir $zdir
@@ -62,7 +44,6 @@ mv zsh-autoswitch-virtualenv-master $zdir/zsh-autoswitch-virtualenv
 rm -r /tmp/zsh
 
 sudo chown $SUDO_USER:$SUDO_USER $user_home/.zsh -R
-sudo sh -c "$(curl -fsSL https://starship.rs/install.sh)"
 sudo usermod -s /bin/zsh $SUDO_USER
 sudo chown -R $SUDO_USER:$SUDO_USER $user_home
 echo "Enter new hostname or leave blank to keep $(cat /etc/hostname): "
