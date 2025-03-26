@@ -51,10 +51,7 @@ setup_user() {
 
     # Ensure the home directory exists
     user_home=$(getent passwd "$username" | cut -d: -f6)
-    mkdir -p "$user_home/.ssh/"
-
-    # Call function to set public key if needed
-    set_public_key
+    sudo mkdir -p "$user_home/.ssh/"
 }
 
 set_public_key(){
@@ -77,7 +74,7 @@ set_public_key(){
     echo "$ssh_public" >> $user_home/.ssh/authorized_keys
 }
 
-shell_stup(){
+shell_setup(){
     [ ! -z $no_shell ] && return
     pwd | grep 'Unbox-main' > /dev/null || (
     touch '/tmp/unbox.lock' && wget https://github.com/keystroke3/unbox/archive/refs/heads/main.zip -O /tmp/unbox.zip && unzip /tmp/unbox.zip -d /tmp/ && cd /tmp/Unbox-main)
@@ -197,11 +194,11 @@ start(){
     done
 
     setup_user
-    # install_packages
-    # set_public_key
-    # setup_shell
-    # set_hostname
-    # [ ! -z $install_docker ] && docker_install
+    install_packages
+    set_public_key
+    shell_setup
+    set_hostname
+    [ ! -z $install_docker ] && docker_install
 }
 
 start "$@"
