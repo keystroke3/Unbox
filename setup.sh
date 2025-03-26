@@ -177,12 +177,12 @@ start(){
 
     echo 
 
-    # setup_user
-    # install_packages
-    # set_public_key
-    # setup_shell
-    # set_hostname
-    # [ ! -z $install_docker ] && docker_install
+    setup_user
+    install_packages
+    set_public_key
+    setup_shell
+    set_hostname
+    [ ! -z $install_docker ] && docker_install
 }
 
 start "$@"
