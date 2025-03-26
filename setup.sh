@@ -23,29 +23,37 @@ no_shell=
 
 export DEBIAN_FRONTEND=noninteractive
 
-setup_user(){
-    [ ! -z $create_user ] && $username=$create_user 
-    if [ -z $username]; then
-	read -p "Account username to use: " -r _user
-	if [ -z $_user ];then
-	    echo "username is required"
-	    exit 1
-	fi
-	username=$_user
+setup_user() {
+    [ ! -z "$create_user" ] && username="$create_user"
+    if [ -z "$username" ]; then
+        read -p "Account username to use: " -r _user
+        if [ -z "$_user" ]; then
+            echo "Username is required"
+            exit 1
+        fi
+        username="$_user"
     fi
-    user_home=$(getent passwd $username | cut -d: -f6)
-    [ ! -z $user_home ];return 0
-    if [ -z $create_user ]; then
-	printf "User $username does not exist or is not a normal user. Create a new user? (y/N) " 
-	read create_user
-	if [ ! "$(echo $create_user | tr '[:upper:]' '[:lower:]')" == 'y' ]; then
-	    exit 1
-	fi
+
+    user_home=$(getent passwd "$username" | cut -d: -f6)
+    [ ! -z "$user_home" ] && return 0
+
+    if [ -z "$create_user" ]; then
+        read -p "User $username does not exist or is not a normal user. Create a new user? (y/N) " _allow_create
+        if [[ ! "${_allow_create,,}" == "y" ]]; then
+            echo "User creation aborted."
+            exit 1
+        fi
     fi
-    echo "creating new user"
-    sudo useradd -s /usr/bin/zsh -m -G sudo
-    sudo passwd $username
-    mkdir -p $user_home/.ssh/
+
+    echo "Creating new user: $username"
+    sudo useradd -s /usr/bin/zsh -m -G sudo "$username"
+    sudo passwd "$username"
+
+    # Ensure the home directory exists
+    user_home=$(getent passwd "$username" | cut -d: -f6)
+    mkdir -p "$user_home/.ssh/"
+
+    # Call function to set public key if needed
     set_public_key
 }
 
@@ -140,6 +148,7 @@ print_help(){
     echo "Setup a new server with zsh and some default settings"
     echo "Usage:
     -u|--username: the name of the account to be used (required)
+    -U|--create_user: creates a new user with given name
     -k|--key: an ssh public key to be added to be added to the user's account
     -d|--install-docker: if docker should be installed
     -H|--hostname: sets the hostname of the server to a given value
@@ -187,14 +196,12 @@ start(){
 	esac
     done
 
-    echo 
-
     setup_user
-    install_packages
-    set_public_key
-    setup_shell
-    set_hostname
-    [ ! -z $install_docker ] && docker_install
+    # install_packages
+    # set_public_key
+    # setup_shell
+    # set_hostname
+    # [ ! -z $install_docker ] && docker_install
 }
 
 start "$@"
