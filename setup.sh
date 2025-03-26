@@ -79,7 +79,7 @@ shell_setup(){
     word_dir="/tmp/Unbox-main"
     pwd | grep 'Unbox-main' > /dev/null || (
     touch '/tmp/unbox.lock' && wget https://github.com/keystroke3/unbox/archive/refs/heads/main.zip -O /tmp/unbox.zip && unzip /tmp/unbox.zip -d /tmp/ && cd $work_dir)
-    dots=(".aliases" ".vim" ".zshrc", ".tmux.conf")
+    dots=(".aliases" ".vim" ".zshrc" ".tmux.conf")
     for dot in ${dots[@]}
     do
 	cp -r "$work_dir/$dot" "$user_home/$dot"
