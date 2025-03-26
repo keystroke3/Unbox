@@ -50,17 +50,19 @@ setup_user(){
 }
 
 set_public_key(){
+    ssh_public=
     [ ! -z $no_key ] && return
     printf "$error_msg"
     if [ ! -z "$key_string" ]; then
-	echo "$ssh_public" >> $user_home/.ssh/authorized_keys
-	return
-    fi
+	ssh_public=$key_string
+    else
     read -p "ssh public key (leave blank to skip) " -r ssh_public
     [ -z "$ssh_public" ] && return
+    fi
     ssh_public=$(printf "%s" "$ssh_public")
     if ! echo "$ssh_public" | ssh-keygen -l -f /dev/stdin > /dev/null; then
 	error_msg="Input is not a valid ssh key "
+	key_string=
 	set_public_key
     fi
     echo "writing ssh key"
