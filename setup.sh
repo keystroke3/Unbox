@@ -26,27 +26,27 @@ export DEBIAN_FRONTEND=noninteractive
 setup_user() {
     [ ! -z "$create_user" ] && username="$create_user"
     if [ -z "$username" ]; then
-        read -p "Account username to use: " -r _user
-        if [ -z "$_user" ]; then
-            echo "Username is required"
-            exit 1
-        fi
-        username="$_user"
+	read -p "Account username to use: " -r _user
+	if [ -z "$_user" ]; then
+	    echo "Username is required"
+	    exit 1
+	fi
+	username="$_user"
     fi
 
     user_home=$(getent passwd "$username" | cut -d: -f6)
     [ ! -z "$user_home" ] && return 0
 
     if [ -z "$create_user" ]; then
-        read -p "User $username does not exist or is not a normal user. Create a new user? (y/N) " _allow_create
-        if [[ ! "${_allow_create,,}" == "y" ]]; then
-            echo "User creation aborted."
-            exit 1
-        fi
+	read -p "User $username does not exist or is not a normal user. Create a new user? (y/N) " _allow_create
+	if [[ ! "${_allow_create,,}" == "y" ]]; then
+	    echo "User creation aborted."
+	    exit 1
+	fi
     fi
 
     echo "Creating new user: $username"
-    sudo useradd -s /usr/bin/zsh -m -G sudo "$username"
+    sudo useradd -m -G sudo "$username"
     sudo passwd "$username"
 
     # Ensure the home directory exists
@@ -61,8 +61,8 @@ set_public_key(){
     if [ ! -z "$key_string" ]; then
 	ssh_public=$key_string
     else
-    read -p "ssh public key (leave blank to skip) " -r ssh_public
-    [ -z "$ssh_public" ] && return
+	read -p "ssh public key (leave blank to skip) " -r ssh_public
+	[ -z "$ssh_public" ] && return
     fi
     ssh_public=$(printf "%s" "$ssh_public")
     if ! echo "$ssh_public" | ssh-keygen -l -f /dev/stdin > /dev/null; then
@@ -76,12 +76,13 @@ set_public_key(){
 
 shell_setup(){
     [ ! -z $no_shell ] && return
+    word_dir="/tmp/Unbox-main"
     pwd | grep 'Unbox-main' > /dev/null || (
-    touch '/tmp/unbox.lock' && wget https://github.com/keystroke3/unbox/archive/refs/heads/main.zip -O /tmp/unbox.zip && unzip /tmp/unbox.zip -d /tmp/ && cd /tmp/Unbox-main)
+    touch '/tmp/unbox.lock' && wget https://github.com/keystroke3/unbox/archive/refs/heads/main.zip -O /tmp/unbox.zip && unzip /tmp/unbox.zip -d /tmp/ && cd $work_dir)
     dots=(".aliases" ".vim" ".zshrc", ".tmux.conf")
     for dot in ${dots[@]}
     do
-	cp -r "/tmp/Unbox-main/$dot" "$user_home/$dot"
+	cp -r "$work_dir/$dot" "$user_home/$dot"
     done
     zdir="$user_home/.zsh"
     [ -d $zdir ] && rm $zdir
@@ -101,8 +102,15 @@ shell_setup(){
     unzip /tmp/zsh/switchenv.zip
     mv zsh-autoswitch-virtualenv-master $zdir/zsh-autoswitch-virtualenv
     rm -r /tmp/zsh
+
+    if [ ! -f "$user_home/.zshrc" ]; then
+        sudo cp $work_dir/.zshrc "$user_home/.zshrc"
+    fi
+
     sudo usermod -s /bin/zsh $username
     sudo chown -R $username:$username $user_home
+
+
 }
 
 
@@ -126,7 +134,7 @@ echo \
     $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     sudo apt-get update
-
+    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin 
 }
 
 
