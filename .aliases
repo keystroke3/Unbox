@@ -10,6 +10,20 @@ if [ -f ~/.zsh/lastdir ]
     then cd "$(cat ~/.zsh/lastdir)"
 fi
 
+dlogs(){
+	fuzz=$(docker ps --format '{{.Names}}' | fzf --reverse --height 40%)
+	[ ! -z $fuzz ] || return 0
+	docker logs $fuzz -f
+}
+
+dexec(){
+	[ ! -z $@ ] || echo "no command given" return 0
+	fuzz=$(docker ps --format '{{.Names}}' | fzf --reverse --height 40%)
+	[ ! -z $fuzz ] || return 0
+	docker exec -it $fuzz $@
+}
+
+
 swap(){
     mv "$1" "$1.swp"; mv "$2" "$1"; mv "$1.swp" "$2"
 }
@@ -96,14 +110,12 @@ alias restart="sudo systemctl restart"
 alias ngt="sudo nginx -t"
 alias ngr="sudo systemctl restart nginx"
 alias apc="sudo apachectl configtest";
-alias dcd="docker-compose down"
-alias dcu="docker-compose up -d"
+alias dcd="docker compose down"
+alias dcu="docker compose up -d"
+alias dcr="docker compose restart"
 alias reload="exec ${SHELL} && clear"
 alias gst='git status'
 alias eza="ls"
-alias dcu="docker-compose up -d"
-alias dcd="docker-compose down"
-alias dcr="docker-compose restart"
 alias pc="sudo netstat -tulnp | grep $1"
 alias crontab="export EDITOR=vim;crontab"
 alias ga="git add -u"

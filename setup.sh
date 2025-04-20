@@ -4,7 +4,7 @@
 
 
 # Add or remove packages from this list
-packages=("unzip" "zsh" "ripgrep" "fd-find" "fzf" "nginx" "python3-virtualenv"  "eza" "net-tools" "python3-pip" "libpangocairo-1.0-0" "htop" "man" "git" "tmux")
+packages=("unzip" "zsh" "ripgrep" "fd-find" "fzf" "nginx" "python3-virtualenv"  "eza" "net-tools" "python3-pip" "libpangocairo-1.0-0" "htop" "man" "git" "tmux", "python3-venv")
 
 # do not modify the code below this point unless you know what you are doing
 
@@ -76,7 +76,7 @@ set_public_key(){
 
 shell_setup(){
     [ ! -z $no_shell ] && return
-    word_dir="/tmp/Unbox-main"
+    work_dir="/tmp/Unbox-main"
     pwd | grep 'Unbox-main' > /dev/null || (
     touch '/tmp/unbox.lock' && wget https://github.com/keystroke3/unbox/archive/refs/heads/main.zip -O /tmp/unbox.zip && unzip /tmp/unbox.zip -d /tmp/ && cd $work_dir)
     dots=(".aliases" ".vim" ".zshrc" ".tmux.conf")
